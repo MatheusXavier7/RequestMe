@@ -1,0 +1,90 @@
+<aside class="sidebar" [class.fully-collapsed]="isFullyCollapsed">
+  <div class="icon-bar">
+    <button class="toggle-global" (click)="toggleFullCollapse()" aria-label="Toggle sidebar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path *ngIf="!isFullyCollapsed" d="M15 18l-6-6 6-6"/>
+        <path *ngIf="isFullyCollapsed" d="M9 18l6-6-6-6"/>
+      </svg>
+    </button>
+
+    <button 
+      class="icon-btn" 
+      [class.active]="activeSection === 'collections'" 
+      (click)="selectSection('collections')"
+      aria-label="Collections">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2"/>
+        <line x1="3" y1="9" x2="21" y2="9"/>
+      </svg>
+      <span class="icon-label">Collections</span>
+    </button>
+
+    <button 
+      class="icon-btn" 
+      [class.active]="activeSection === 'environments'" 
+      (click)="selectSection('environments')"
+      aria-label="Environments">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+      </svg>
+      <span class="icon-label">Environments</span>
+    </button>
+
+    <button 
+      class="icon-btn" 
+      [class.active]="activeSection === 'history'" 
+      (click)="selectSection('history')"
+      aria-label="History">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="13" r="8"/>
+        <path d="M12 9v4l2 2"/>
+      </svg>
+      <span class="icon-label">History</span>
+    </button>
+  </div>
+
+  <div class="content-area" *ngIf="!isFullyCollapsed && activeSection">
+    <div class="section" *ngIf="activeSection === 'collections'">
+      <h3>Collections</h3>
+      <div class="section-actions">
+        <button>+ New</button>
+        <button>Import</button>
+        <input type="text" placeholder="Search collections"/>
+      </div>
+      <ul>
+        <li class="collection active">→ Access Token Projeto</li>
+        <li>→ Create</li>
+        <li>→ Delete</li>
+        <li class="expanded">▼ REST API basics: CRUD, test & variable
+          <ul class="sub">
+            <li><span class="method get">GET</span> Get data</li>
+            <li><span class="method post">POST</span> Post data</li>
+            <li><span class="method put">PUT</span> Update data</li>
+            <li><span class="method delete">DEL</span> Delete data</li>
+          </ul>
+        </li>
+        <li>→ SoBrecho</li>
+        <li>→ Update</li>
+      </ul>
+    </div>
+
+    <div class="section" *ngIf="activeSection === 'environments'">
+      <h3>Environments</h3>
+      <button class="create">+ Create</button>
+      <div class="env-item active">Globals</div>
+      <div class="variable">
+        TOKEN <span class="check">✓</span> <span class="more">...</span>
+      </div>
+    </div>
+
+    <div class="section" *ngIf="activeSection === 'history'">
+      <h3>History</h3>
+      <ul>
+        <li>POST localhost:8080/email/teste</li>
+        <li>GET localhost:8080/veiculo/me/rejeitados</li>
+        <li>GET localhost:4200/api/v1/projects</li>
+      </ul>
+    </div>
+  </div>
+</aside>

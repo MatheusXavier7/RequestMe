@@ -1,0 +1,141 @@
+.sidebar {
+  display: flex;
+  height: 100%;
+  top: 6vh;
+  left: 0;
+  z-index: 99;
+  transition: all 0.3s ease;
+}
+
+.icon-bar {
+  width: 75px;
+  background: #161b22;
+  border-right: 1px solid #30363d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 12px;
+  gap: 24px;
+  padding-left: 8px;    
+  padding-right: 8px;
+}
+
+.toggle-global {
+  background: none;
+  border: none;
+  color: #8b949e;
+  cursor: pointer;
+  padding: 8px;
+  &:hover { color: #fff; }
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  color: #8b949e;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+  width: 100%;
+  cursor: pointer;
+
+  svg { stroke: currentColor; }
+
+  .icon-label {
+    font-size: 10px;
+    text-align: center;
+    white-space: nowrap;
+    opacity: 0.8;
+  }
+
+  &:hover,
+  &.active {
+    color: #fff;
+    background: #21262d;
+  }
+
+  &.active {
+    border-bottom: 3px solid #58a6ff;
+  }
+}
+
+.content-area {
+  width: 0;
+  overflow: hidden;
+  background: #161b22;
+  border-right: 1px solid #30363d;
+  transition: width 0.3s ease;
+
+  .sidebar:not(.fully-collapsed) & {
+    width: 240px;
+    min-width: 240px;
+  }
+}
+
+.section {
+  padding: 16px;
+}
+
+.section h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+.section-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+button {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: default;
+}
+
+input {
+  background: #21262d;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.collection, .env-item, .history li {
+  padding: 6px 0;
+  cursor: default;
+}
+
+.collection.active {
+  color: #fff;
+  font-weight: 500;
+}
+
+.method {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+  color: white;
+}
+
+.get { background: #238636; }
+.post { background: #0066cc; }
+.put { background: #f0ad4e; }
+.delete { background: #d9534f; }
+
+.check { color: #238636; }
+.more { color: #8b949e; float: right; }
+
+@media (max-width: 768px) {
+  .icon-bar { width: 50px; }
+  .content-area:not(.fully-collapsed) { width: 200px; min-width: 200px; }
+}
