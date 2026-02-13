@@ -22,10 +22,16 @@ export class LeftSidebarComponent {
   }
 }
 
-  selectSection(section: 'collections' | 'environments' | 'history') {
-    if (this.isFullyCollapsed) {
-      this.isFullyCollapsed = false;
-    }
-    this.activeSection = this.activeSection === section ? null : section;
+ selectSection(section: 'collections' | 'environments' | 'history') {
+  if (this.isFullyCollapsed) {
+    this.isFullyCollapsed = false;
   }
+  
+  if (this.activeSection === section) {
+    this.activeSection = null;
+    this.isFullyCollapsed = true;
+  } else {
+    this.activeSection = section;
+  }
+}
 }
