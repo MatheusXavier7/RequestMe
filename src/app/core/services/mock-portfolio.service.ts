@@ -31,7 +31,6 @@ export class MockPortfolioService {
   ];
 
 
-  //Calcula idade exata.
   private getAge(): number {
   const birthDate = new Date(2005, 2, 25);
   const today = new Date();

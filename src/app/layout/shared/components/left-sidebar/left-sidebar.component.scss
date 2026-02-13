@@ -1,10 +1,10 @@
 .sidebar {
   display: flex;
   height: 100%;
-  top: 6vh;
-  left: 0;
-  z-index: 99;
-  transition: all 0.3s ease;
+  background: #161b22;
+  color: #d4d4d4;
+  transition: width 0.3s ease;
+  border-right: 1px solid #30363d;
 }
 
 .icon-bar {
@@ -16,7 +16,7 @@
   align-items: center;
   padding-top: 12px;
   gap: 24px;
-  padding-left: 8px;    
+  padding-left: 8px;
   padding-right: 8px;
 }
 
@@ -26,7 +26,8 @@
   color: #8b949e;
   cursor: pointer;
   padding: 8px;
-  &:hover { color: #fff; }
+  border-radius: 4px;
+  &:hover { background: #21262d; color: #fff; }
 }
 
 .icon-btn {
@@ -40,6 +41,7 @@
   padding: 8px 0;
   width: 100%;
   cursor: pointer;
+  border-radius: 4px;
 
   svg { stroke: currentColor; }
 
@@ -50,27 +52,27 @@
     opacity: 0.8;
   }
 
-  &:hover,
-  &.active {
-    color: #fff;
+  &:hover {
     background: #21262d;
+    color: #fff;
   }
 
   &.active {
-    border-bottom: 3px solid #58a6ff;
+    background: #21262d;
+    color: #fff;
+    border-bottom: 3px solid #58a6ff; // azul embaixo
   }
 }
 
 .content-area {
+  flex: 1; // cresce automaticamente
   width: 0;
-  overflow: hidden;
+  overflow-y: auto;
   background: #161b22;
-  border-right: 1px solid #30363d;
   transition: width 0.3s ease;
 
   .sidebar:not(.fully-collapsed) & {
-    width: 240px;
-    min-width: 240px;
+    width: 270px; // expande para caber bem o conteúdo
   }
 }
 
@@ -83,6 +85,9 @@
   font-weight: 600;
   margin-bottom: 12px;
   color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .section-actions {
@@ -97,10 +102,12 @@ button {
   color: #c9d1d9;
   padding: 6px 12px;
   border-radius: 4px;
-  cursor: default;
+  cursor: pointer;
+  &:hover { background: #30363d; }
 }
 
 input {
+  flex: 1;
   background: #21262d;
   border: 1px solid #30363d;
   color: #c9d1d9;
@@ -109,33 +116,72 @@ input {
   font-size: 12px;
 }
 
-.collection, .env-item, .history li {
-  padding: 6px 0;
-  cursor: default;
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.collection.active {
-  color: #fff;
-  font-weight: 500;
+.collection {
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover { background: #21262d; }
+
+  &.active {
+    background: #21262d;
+    color: #fff;
+  }
+
+  .arrow {
+    font-size: 10px;
+    color: #8b949e;
+    min-width: 10px;
+  }
+}
+
+.sub {
+  padding-left: 24px;
+  margin: 4px 0;
 }
 
 .method {
   font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  margin-right: 6px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  min-width: 40px;
+  text-align: center;
   color: white;
 }
 
-.get { background: #238636; }
-.post { background: #0066cc; }
-.put { background: #f0ad4e; }
-.delete { background: #d9534f; }
+.get { background: #4caf50; } // verde vivo Insomnia-style
+.post { background: #2196f3; }
+.put { background: #ff9800; }
+.delete { background: #f44336; }
 
-.check { color: #238636; }
-.more { color: #8b949e; float: right; }
+.env-item {
+  padding: 6px 0;
+  font-weight: 500;
+  &.active { color: #fff; }
+}
+
+.variable {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.check { color: #4caf50; }
+.more { color: #8b949e; cursor: pointer; }
 
 @media (max-width: 768px) {
-  .icon-bar { width: 50px; }
-  .content-area:not(.fully-collapsed) { width: 200px; min-width: 200px; }
+  .icon-bar { width: 60px; }
+  .content-area:not(.fully-collapsed) { width: 220px; }
 }
