@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -10,6 +10,12 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './request-me.component.scss'
 })
 export class RequestMeComponent {
+
+  responseHeight = 320;
+  isResizing = false;
+  startY = 0;
+  startHeight = 0;
+
   methods = [
     { value: 'GET', label: 'GET' },
     { value: 'POST', label: 'POST' },
@@ -45,5 +51,32 @@ export class RequestMeComponent {
 
   sendRequest() {
     console.log('Simulando send:', this.selectedMethod, this.url);
+  }
+
+  
+  startResize(event: MouseEvent) {
+    this.isResizing = true;
+    this.startY = event.clientY;
+    this.startHeight = this.responseHeight;
+
+    event.preventDefault();
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    if (!this.isResizing) return;
+
+    const delta = event.clientY - this.startY;
+    let newHeight = this.startHeight - delta;
+
+    newHeight = Math.max(100, newHeight);
+    newHeight = Math.min(800, newHeight);
+
+    this.responseHeight = newHeight;
+  }
+
+  @HostListener('document:mouseup')
+  onMouseUp() {
+    this.isResizing = false;
   }
 }

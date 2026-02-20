@@ -10,11 +10,7 @@
   </div>
 
   <div class="tabs-bar">
-    <button 
-      *ngFor="let tab of tabs" 
-      class="tab-btn" 
-      [class.active]="activeTab === tab" 
-      (click)="selectTab(tab)">
+    <button *ngFor="let tab of tabs" class="tab-btn" [class.active]="activeTab === tab" (click)="selectTab(tab)">
       {{ tab }}
     </button>
   </div>
@@ -47,8 +43,8 @@
       <p>{{ activeTab }} section (coming soon)</p>
     </div>
   </div>
-
-  <div class="response-section">
+  <div class="splitter" (mousedown)="startResize($event)"></div>
+  <div class="response-section" [style.height.px]="responseHeight">
     <div class="response-header">
       <span class="status success">{{ responseStatus }}</span>
       <span class="time">{{ responseTime }}</span>

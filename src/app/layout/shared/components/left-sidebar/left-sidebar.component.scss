@@ -60,19 +60,19 @@
   &.active {
     background: #21262d;
     color: #fff;
-    border-bottom: 3px solid #58a6ff; // azul embaixo
+    border-bottom: 3px solid #58a6ff;
   }
 }
 
 .content-area {
-  flex: 1; // cresce automaticamente
+  flex: 1;
   width: 0;
   overflow-y: auto;
   background: #161b22;
   transition: width 0.3s ease;
 
   .sidebar:not(.fully-collapsed) & {
-    width: 270px; // expande para caber bem o conteúdo
+    width: 270px;
   }
 }
 
@@ -159,7 +159,7 @@ ul {
   color: white;
 }
 
-.get { background: #4caf50; } // verde vivo Insomnia-style
+.get { background: #4caf50; }
 .post { background: #2196f3; }
 .put { background: #ff9800; }
 .delete { background: #f44336; }
