@@ -32,7 +32,6 @@ export class RequestMeComponent {
   responseStored = false;
 
   queryParams = [
-    { key: '', value: '', description: '' },
     { key: '', value: '', description: '' }
   ];
 
