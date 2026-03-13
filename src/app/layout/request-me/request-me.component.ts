@@ -46,7 +46,7 @@ export class RequestMeComponent implements OnInit, OnDestroy {
   ];
 
   selectedMethod = 'GET';
-  url = '';
+  url = 'http://localhost:8080/matheus/about';
   tabs = ['Params', 'Authorization', 'Headers', 'Body'];
   activeTab = 'Params';
 
@@ -167,5 +167,5 @@ export class RequestMeComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('document:mouseup')
-  onMouseUp() { this.resizing = false; }
+  onMouseUp() { this.resizing = false; }  
 }
