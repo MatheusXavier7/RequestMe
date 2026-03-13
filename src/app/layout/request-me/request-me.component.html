@@ -34,8 +34,8 @@
         </thead>
         <tbody>
           <tr *ngFor="let param of queryParams; let i = index">
-            <td><input [(ngModel)]="param.key" placeholder="Key" (ngModelChange)="onParamChange(i)" /></td>
-            <td><input [(ngModel)]="param.value" placeholder="Value" (ngModelChange)="onParamChange(i)" /></td>
+            <td><input [(ngModel)]="param.key" placeholder="Key" (ngModelChange)="onParamChange()" /></td>
+            <td><input [(ngModel)]="param.value" placeholder="Value" (ngModelChange)="onParamChange()" /></td>
             <td><input [(ngModel)]="param.description" placeholder="Description" /></td>
             <td><button class="remove-btn" (click)="removeParam(i)">-</button></td>
           </tr>

@@ -1,6 +1,14 @@
-import { Component, HostListener, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { SidebarService } from '../../core/services/sidebar.service';
+
+interface QueryParam {
+  key: string;
+  value: string;
+  description: string;
+}
 
 @Component({
   selector: 'app-request-me',
@@ -9,42 +17,52 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './request-me.component.html',
   styleUrl: './request-me.component.scss'
 })
-export class RequestMeComponent implements OnInit {
+export class RequestMeComponent implements OnInit, OnDestroy {
 
-  @ViewChild('requestContainer') requestContainer!: ElementRef<HTMLDivElement>;
+  @ViewChild('requestContainer') requestContainer!: ElementRef;
 
-  responseHeight = 320;
-  isResizing = false;
-  startY = 0;
-  startHeight = 0;
-  containerHeight = 0;
+  private sidebarSub!: Subscription;
+
+  constructor(private sidebarService: SidebarService) { }
+
+  ngOnInit() {
+    this.sidebarSub = this.sidebarService.onRequestSelected$.subscribe(({ method, url }) => {
+      this.selectedMethod = method;
+      this.url = url;
+      this.parseUrlToParams();
+    });
+  }
+
+  ngOnDestroy() {
+    this.sidebarSub.unsubscribe();
+  }
 
   methods = [
     { value: 'GET', label: 'GET' },
     { value: 'POST', label: 'POST' },
     { value: 'PUT', label: 'PUT' },
+    { value: 'PATCH', label: 'PATCH' },
     { value: 'DELETE', label: 'DELETE' },
-    { value: 'PATCH', label: 'PATCH' }
   ];
 
   selectedMethod = 'GET';
-  url = 'http://localhost:8080/matheus/about';
-
-  tabs = ['Params', 'Authorization', 'Headers (7)', 'Body', 'Scripts', 'Settings'];
+  url = '';
+  tabs = ['Params', 'Authorization', 'Headers', 'Body'];
   activeTab = 'Params';
 
-  responseStatus = '200 OK';
-  responseTime = '13.40 s';
-  responseSize = '464 B';
+  queryParams: QueryParam[] = [{ key: '', value: '', description: '' }];
+
+  responseStatus = '';
+  responseTime = '';
+  responseSize = '';
   responseStored = false;
+  responseBody = '';
+  isLoading = false;
 
-  queryParams = [
-    { key: '', value: '', description: '' }
-  ];
-
-  ngOnInit() {
-    this.parseUrlToParams();
-  }
+  responseHeight = 220;
+  private resizing = false;
+  private startY = 0;
+  private startH = 0;
 
   selectTab(tab: string) {
     this.activeTab = tab;
@@ -54,133 +72,100 @@ export class RequestMeComponent implements OnInit {
     this.queryParams.push({ key: '', value: '', description: '' });
   }
 
-  removeParam(index: number) {
-    this.queryParams.splice(index, 1);
-    this.updateUrlFromParams();
+  removeParam(i: number) {
+    this.queryParams.splice(i, 1);
+    this.rebuildUrl();
   }
 
-  onParamChange(index: number) {
-    this.updateUrlFromParams();
-
-    if (index === this.queryParams.length - 1) {
-      const param = this.queryParams[index];
-      if ((param.key || '').trim() || (param.value || '').trim()) {
-        this.queryParams.push({ key: '', value: '', description: '' });
-      }
-    }
+  onParamChange() {
+    this.rebuildUrl();
   }
 
-  private updateUrlFromParams() {
-    let baseUrl = this.url || '';
-    let hash = '';
+  parseUrlToParams() {
+    if (!this.url) return;
+    try {
+      const parsed = new URL(this.url.startsWith('http') ? this.url : 'http://' + this.url);
+      const params: QueryParam[] = [];
+      parsed.searchParams.forEach((v, k) => {
+        params.push({ key: k, value: v, description: '' });
+      });
+      this.queryParams = params.length > 0
+        ? [...params, { key: '', value: '', description: '' }]
+        : [{ key: '', value: '', description: '' }];
+    } catch {
 
-    if (baseUrl.includes('#')) {
-      const parts = baseUrl.split('#');
-      baseUrl = parts[0];
-      hash = '#' + parts.slice(1).join('#');
-    }
-
-    const queryIndex = baseUrl.indexOf('?');
-    const base = queryIndex !== -1 ? baseUrl.substring(0, queryIndex) : baseUrl;
-
-    const paramParts: string[] = [];
-
-    this.queryParams.forEach(param => {
-      const k = (param.key || '').trim();
-      const v = (param.value || '').trim();
-
-      if (k === '' && v === '') return;
-
-      if (k !== '' && v === '') {
-        paramParts.push(encodeURIComponent(k));
-      } else if (k !== '' && v !== '') {
-        paramParts.push(encodeURIComponent(k) + '=' + encodeURIComponent(v));
-      } else if (k === '' && v !== '') {
-        paramParts.push('=' + encodeURIComponent(v));
-      }
-    });
-
-    const queryStr = paramParts.join('&');
-    const newUrl = base + (queryStr ? '?' + queryStr : '') + hash;
-
-    if (newUrl !== this.url) {
-      this.url = newUrl;
     }
   }
 
-  public parseUrlToParams() {
-    const queryIndex = this.url.indexOf('?');
-    if (queryIndex === -1) {
-      this.queryParams = [{ key: '', value: '', description: '' }];
-      return;
+  rebuildUrl() {
+    try {
+      const base = this.url.split('?')[0];
+      const filled = this.queryParams.filter(p => p.key.trim());
+      this.url = filled.length === 0
+        ? base
+        : `${base}?${filled.map(p => `${encodeURIComponent(p.key)}=${encodeURIComponent(p.value)}`).join('&')}`;
+    } catch {
+
     }
-
-    let queryStr = this.url.substring(queryIndex + 1);
-    const hashIndex = queryStr.indexOf('#');
-    if (hashIndex !== -1) {
-      queryStr = queryStr.substring(0, hashIndex);
-    }
-
-    if (!queryStr.trim()) {
-      this.queryParams = [{ key: '', value: '', description: '' }];
-      return;
-    }
-
-    const pairs = queryStr.split('&');
-    const newParams: { key: string; value: string; description: string }[] = [];
-
-    for (const pair of pairs) {
-      if (!pair.trim()) continue;
-
-      const eqIndex = pair.indexOf('=');
-      let k: string, v: string;
-
-      if (eqIndex === -1) {
-        k = pair;
-        v = '';
-      } else {
-        k = pair.substring(0, eqIndex);
-        v = pair.substring(eqIndex + 1);
-      }
-
-      const key = k ? decodeURIComponent(k) : '';
-      const value = v ? decodeURIComponent(v) : '';
-
-      newParams.push({ key, value, description: '' });
-    }
-
-    this.queryParams = newParams;
-    this.queryParams.push({ key: '', value: '', description: '' });
   }
 
-  sendRequest() {
-    console.log('Enviando request:', this.selectedMethod, this.url);
+  async sendRequest() {
+    if (!this.url.trim()) return;
+
+    this.isLoading = true;
+    this.responseStored = false;
+    this.responseStatus = '';
+    this.responseTime = '';
+    this.responseSize = '';
+
+    const start = Date.now();
+    const fullUrl = this.url.startsWith('http') ? this.url : 'http://' + this.url;
+
+    try {
+      const res = await fetch(fullUrl, { method: this.selectedMethod, headers: { 'Content-Type': 'application/json' } });
+      const elapsed = Date.now() - start;
+      const text = await res.text();
+
+      let body: string;
+      try { body = JSON.stringify(JSON.parse(text), null, 2); }
+      catch { body = text; }
+
+      this.responseStatus = `${res.status} ${res.statusText}`;
+      this.responseTime = `${elapsed} ms`;
+      this.responseSize = `${new Blob([text]).size} B`;
+      this.responseBody = body;
+      this.responseStored = true;
+    } catch (err: any) {
+      this.responseStatus = 'Error';
+      this.responseTime = `${Date.now() - start} ms`;
+      this.responseSize = '—';
+      this.responseBody = err?.message ?? 'Request failed';
+      this.responseStored = true;
+    } finally {
+      this.isLoading = false;
+    }
   }
 
-  startResize(event: MouseEvent) {
-    this.isResizing = true;
-    this.startY = event.clientY;
-    this.startHeight = this.responseHeight;
-    this.containerHeight = this.requestContainer.nativeElement.offsetHeight;
+  get statusClass(): string {
+    const code = parseInt(this.responseStatus, 10);
+    if (code >= 200 && code < 300) return 'success';
+    if (code >= 400) return 'error';
+    return 'pending';
+  }
 
-    event.preventDefault();
+  startResize(e: MouseEvent) {
+    this.resizing = true;
+    this.startY = e.clientY;
+    this.startH = this.responseHeight;
+    e.preventDefault();
   }
 
   @HostListener('document:mousemove', ['$event'])
-  onMouseMove(event: MouseEvent) {
-    if (!this.isResizing) return;
-
-    const delta = event.clientY - this.startY;
-    let newHeight = this.startHeight - delta;
-
-    newHeight = Math.max(100, newHeight);
-    newHeight = Math.min(800, newHeight);
-
-    this.responseHeight = newHeight;
+  onMouseMove(e: MouseEvent) {
+    if (!this.resizing) return;
+    this.responseHeight = Math.max(100, Math.min(600, this.startH + (this.startY - e.clientY)));
   }
 
   @HostListener('document:mouseup')
-  onMouseUp() {
-    this.isResizing = false;
-  }
+  onMouseUp() { this.resizing = false; }
 }
